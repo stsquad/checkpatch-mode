@@ -30,6 +30,8 @@
 
 ;; Require prerequisites
 
+(require 'compile) ; for compilation-mode
+
 ;; Variables
 
 ;; Match checkpatch.pl output
