@@ -43,7 +43,9 @@
 
 (defvar checkpatch-script-path
   "Path to the default checkpatch script."
-  "/home/alex/lsrc/qemu/qemu.git/scripts/checkpatch.pl")
+  nil)
+(make-variable-buffer-local 'checkpatch-script-path)
+(put 'checkpatch-script-path 'permanent-local t)
 
 ;; Helpers
 
@@ -73,10 +75,10 @@
     (start-process-shell-command
      proc-name
      buff-name
-     (format "%s %s" script file)))
+     (format "%s %s" script file))
     (switch-to-buffer buff-name)
     (goto-char (point-min))
-    (checkpatch-mode))
+    (checkpatch-mode)))
 
 ;; Define the mode
 ;;###autoload
