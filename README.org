@@ -1,0 +1,30 @@
+* Introduction
+
+This is a simple minor-mode for running checkpatch scripts.
+
+A checkpatch script is a script that will scan a patch or file and
+check the code meets a number of criteria. This sort of automatic code
+review is encouraged as it means people will spend less time
+correcting stylistic mistakes and can concentrate on the core code
+changes.
+
+* User functions
+
+There are currently two functions you can run:
+
+  - checkpatch-run-against-file
+  - checkpatch-run-from-magit
+
+The second function it for calling from magit and will only work if
+(magit-commit-at-point) finds a commit (e.g. point is at a log entry).
+
+* Implementation Details
+
+This minor mode is a derived from compilation-mode. The
+checkpatch-mode-regex is currently tuned to the output from the Linux
+kernel checkpatch.
+
+* Future work
+** TODO Make checkpatch-find-script-or-prompt smarter
+Currently we set the script path as a local variable when we are first
+called however we could be smarter looking at common locations.
