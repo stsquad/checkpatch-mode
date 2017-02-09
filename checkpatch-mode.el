@@ -44,14 +44,14 @@
     ))
 
 (defvar checkpatch-script-path
-  "Path to the default checkpatch script."
-  nil)
+  nil
+  "Path to the default checkpatch script.")
 (make-variable-buffer-local 'checkpatch-script-path)
 (put 'checkpatch-script-path 'permanent-local t)
 
 (defvar checkpatch-result
-  "Result of last checkpatch call."
-  nil)
+  nil
+  "Result of last checkpatch call.")
 (make-variable-buffer-local 'checkpatch-result)
 (put 'checkpatch-result 'permanent-local t)
 
