@@ -93,6 +93,18 @@
           (call-process script nil t t "-f" file))
     (checkpatch-mode)))
 
+(defun checkpatch-run-against-commit (script commit)
+  "Run the checkpatch `SCRIPT' against `COMMIT'."
+  (let ((proc-name "checkpatch")
+        (buff-name (format "checkpatch-%s" commit)))
+    (start-process-shell-command
+     proc-name
+     buff-name
+     (format "git show --pretty=email %s | %s -" commit script))
+    (switch-to-buffer buff-name)
+    (goto-char (point-min))
+    (checkpatch-mode)))
+
 (defun checkpatch-find-script-or-prompt ()
   "Find checkpatch script or prompt the user if not found."
   (interactive)
@@ -110,6 +122,18 @@ If `FILE' is not set assume it is the file of the current buffer."
     (if (not file)
         (setq file (buffer-file-name)))
     (checkpatch-run script file)))
+
+;; Run from inside magit
+(defun checkpatch-run-from-magit ()
+  "Run a checkpatch script against current magit commit."
+  (interactive)
+  (let ((commit (magit-commit-at-point)))
+    (when (and commit
+               (checkpatch-find-script-or-prompt))
+      (checkpatch-run-against-commit checkpatch-script-path commit))))
+
+; What is the correct way to bind this command into magit?
+
 
 ;; Define the mode
 ;;###autoload
