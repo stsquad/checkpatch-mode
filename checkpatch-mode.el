@@ -1,6 +1,6 @@
 ;;; checkpatch-mode.el --- Support for checkpatch
 ;;
-;; Copyright (C) 2014 Alex Bennée
+;; Copyright (C) 2014-16 Alex Bennée
 
 ;; Author: Alex Bennée <alex.bennee@linaro.org>
 ;; Maintainer: Alex Bennée <alex.bennee@linaro.org>
