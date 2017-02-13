@@ -1,4 +1,4 @@
-;;; checkpatch-mode --- A simple mode for the results of checkpatch scripts
+;;; checkpatch-mode.el --- Support for checkpatch
 ;;
 ;; Copyright (C) 2014 Alex Bennée
 
@@ -6,6 +6,8 @@
 ;; Maintainer: Alex Bennée <alex.bennee@linaro.org>
 ;; Version: 0.1
 ;; Homepage: http://github.com/stsquad/checkpatch-mode
+;; Package-Requires: ((emacs "24.3"))
+
 
 ;; This file is not part of GNU Emacs.
 
