@@ -8,14 +8,15 @@ review is encouraged as it means people will spend less time
 correcting stylistic mistakes and can concentrate on the core code
 changes.
 
-* User functions
+* User entry functions
 
-There are currently two functions you can run:
+Currently the user facing functions are:
 
   - checkpatch-run-against-file
+  - checkpatch-run-against-patch-file
   - checkpatch-run-from-magit
 
-The second function it for calling from magit and will only work if
+The last function it for calling from magit and will only work if
 (magit-commit-at-point) finds a commit (e.g. point is at a log entry).
 
 * Implementation Details

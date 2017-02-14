@@ -83,7 +83,7 @@
   "Keymap for major mode `checkpatch-mode'.")
 
 ;; Launch functions
-(defun checkpatch-run (script file)
+(defun checkpatch-run (script file &optional file-is-patch)
   "Run the checkpatch `SCRIPT' against `FILE'."
   (interactive)
   (let ((proc-name "checkpatch")
@@ -92,7 +92,9 @@
     (goto-char (point-min))
     (erase-buffer)
     (setq checkpatch-result
-          (call-process script nil t t "-f" file))
+          (if file-is-patch
+              (call-process script nil t t file)
+            (call-process script nil t t "-f" file)))
     (checkpatch-mode)))
 
 (defun checkpatch-run-against-commit (script commit)
@@ -135,6 +137,12 @@
            (((ido-read-file-name
               "Checkpatch Script: " default-directory)))))
     (setq checkpatch-script-path script)))
+
+(defun checkpatch-run-against-patch-file (patch-file)
+  "Run checkpatch against `PATCH-FILE'."
+  (interactive)
+  (let ((script (checkpatch-find-script-or-prompt)))
+    (checkpatch-run script patch-file t)))
 
 (defun checkpatch-run-against-file (&optional file)
   "Run checkpatch against `FILE'.
