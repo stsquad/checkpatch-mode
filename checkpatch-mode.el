@@ -110,11 +110,17 @@
 (defun checkpatch-find-script-or-prompt ()
   "Find checkpatch script or prompt the user if not found."
   (interactive)
-  (if (file-exists-p checkpatch-script-path)
+  (if (and checkpatch-script-path
+           (file-exists-p checkpatch-script-path))
       checkpatch-script-path
-    (setq checkpatch-script-path
-          (ido-read-file-name
-           "Checkpatch Script: " default-directory))))
+    (let ((base-dir
+           (locate-dominating-file
+            (buffer-file-name) "scripts/checkpatch.pl")))
+      (setq checkpatch-script-path
+            (if base-dir
+                (concat base-dir "scripts/checkpatch.pl")
+              (ido-read-file-name
+               "Checkpatch Script: " default-directory))))))
 
 (defun checkpatch-run-against-file (&optional file)
   "Run checkpatch against `FILE'.
