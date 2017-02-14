@@ -110,17 +110,31 @@
 (defun checkpatch-find-script-or-prompt ()
   "Find checkpatch script or prompt the user if not found."
   (interactive)
-  (if (and checkpatch-script-path
-           (file-exists-p checkpatch-script-path))
-      checkpatch-script-path
-    (let ((base-dir
-           (locate-dominating-file
-            (buffer-file-name) "scripts/checkpatch.pl")))
-      (setq checkpatch-script-path
-            (if base-dir
-                (concat base-dir "scripts/checkpatch.pl")
-              (ido-read-file-name
-               "Checkpatch Script: " default-directory))))))
+  (let ((script))
+    (setq script
+          (cond
+           ;; Is checkpatch-script-path already set and correct?
+           ((and checkpatch-script-path
+                 (file-exists-p checkpatch-script-path))
+            checkpatch-script-path)
+           ;; Can we find it in relation to current buffer-file-name?
+           ((and buffer-file-name
+                 (locate-dominating-file
+                  (buffer-file-name) "scripts/checkpatch.pl"))
+            (concat (locate-dominating-file
+                     (buffer-file-name) "scripts/checkpatch.pl")
+                    "scripts/checkpatch.pl"))
+           ;; What about w.r.t default-directory
+           ((and default-directory
+                 (locate-dominating-file
+                  default-directory "scripts/checkpatch.pl"))
+            (concat (locate-dominating-file
+                     default-directory "scripts/checkpatch.pl")
+                    "scripts/checkpatch.pl"))
+           ;; Finally try asking the user
+           (((ido-read-file-name
+              "Checkpatch Script: " default-directory)))))
+    (setq checkpatch-script-path script)))
 
 (defun checkpatch-run-against-file (&optional file)
   "Run checkpatch against `FILE'.
