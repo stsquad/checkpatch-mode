@@ -109,33 +109,37 @@
     (goto-char (point-min))
     (checkpatch-mode)))
 
+(defun checkpatch-find-script ()
+  "Find checkpatch script or return nil if we can't find it."
+  (cond
+   ;; Is checkpatch-script-path already set and correct?
+   ((and checkpatch-script-path
+         (file-exists-p checkpatch-script-path))
+    checkpatch-script-path)
+   ;; Can we find it in relation to current buffer-file-name?
+   ((and buffer-file-name
+         (locate-dominating-file
+          (buffer-file-name) "scripts/checkpatch.pl"))
+    (concat (locate-dominating-file
+             (buffer-file-name) "scripts/checkpatch.pl")
+            "scripts/checkpatch.pl"))
+   ;; What about w.r.t default-directory
+   ((and default-directory
+         (locate-dominating-file
+          default-directory "scripts/checkpatch.pl"))
+    (concat (locate-dominating-file
+             default-directory "scripts/checkpatch.pl")
+            "scripts/checkpatch.pl"))
+   (t nil)))
+
 (defun checkpatch-find-script-or-prompt ()
   "Find checkpatch script or prompt the user if not found."
   (interactive)
-  (let ((script))
-    (setq script
-          (cond
-           ;; Is checkpatch-script-path already set and correct?
-           ((and checkpatch-script-path
-                 (file-exists-p checkpatch-script-path))
-            checkpatch-script-path)
-           ;; Can we find it in relation to current buffer-file-name?
-           ((and buffer-file-name
-                 (locate-dominating-file
-                  (buffer-file-name) "scripts/checkpatch.pl"))
-            (concat (locate-dominating-file
-                     (buffer-file-name) "scripts/checkpatch.pl")
-                    "scripts/checkpatch.pl"))
-           ;; What about w.r.t default-directory
-           ((and default-directory
-                 (locate-dominating-file
-                  default-directory "scripts/checkpatch.pl"))
-            (concat (locate-dominating-file
-                     default-directory "scripts/checkpatch.pl")
-                    "scripts/checkpatch.pl"))
-           ;; Finally try asking the user
-           (((ido-read-file-name
-              "Checkpatch Script: " default-directory)))))
+  (let ((script (checkpatch-find-script)))
+    (unless script
+      (setq script
+            (ido-read-file-name
+              "Checkpatch Script: " default-directory)))
     (setq checkpatch-script-path script)))
 
 (defun checkpatch-run-against-patch-file (patch-file)
@@ -162,7 +166,17 @@ If `FILE' is not set assume it is the file of the current buffer."
                (checkpatch-find-script-or-prompt))
       (checkpatch-run-against-commit checkpatch-script-path commit))))
 
-; What is the correct way to bind this command into magit?
+(defun checkpatch-magit-hook ()
+  "Hook checkpatch commands into magit.
+
+This is intended to be run from various magit-mode hooks and will add
+a keybinding to the local magit to call checkpatch if the script is
+found."
+  (when (checkpatch-find-script)
+    (local-set-key (kbd "C") 'checkpatch-run-from-magit)))
+
+(eval-after-load 'magit
+  (add-hook 'magit-log-mode-hook 'checkpatch-magit-hook))
 
 
 ;; Define the mode
