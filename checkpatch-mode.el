@@ -176,7 +176,8 @@ If `FILE' is not set assume it is the file of the current buffer."
 This is intended to be run from various magit-mode hooks and will add
 a keybinding to the local magit to call checkpatch if the script is
 found."
-  (when (checkpatch-find-script)
+  (when (and (checkpatch-find-script)
+             (derived-mode-p 'magit-log-mode))
     (local-set-key (kbd "C") 'checkpatch-run-from-magit)))
 
 (eval-after-load 'magit
