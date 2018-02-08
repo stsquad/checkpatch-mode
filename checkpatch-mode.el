@@ -38,12 +38,12 @@
 
 ;; Match checkpatch.pl output
 (defvar checkpatch-mode-regex
-  "A regular expressions for `compilation-error-regexp-alist-alist'"
   '(checkpatch
     "\\(WARNING\\|ERROR\\).*\n#.*FILE: \\([^:]+\\):\\([^:digit:]+\\).*\n.*"
     2 ; file
     3 ; line
-    ))
+    )
+  "A regular expressions for `compilation-error-regexp-alist-alist'")
 
 (defvar checkpatch-script-path
   nil
