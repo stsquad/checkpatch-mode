@@ -106,12 +106,11 @@
   "Run the checkpatch `SCRIPT' against `COMMIT'."
   (let ((proc-name "checkpatch")
         (buff-name (format "checkpatch-%s" commit)))
-    (start-process-shell-command
-     proc-name
-     buff-name
-     (format "git show --pretty=email %s | %s -" commit script))
-    (switch-to-buffer buff-name)
-    (goto-char (point-min))
+    (checkpatch--prepare-buffer buff-name)
+    (setq checkpatch-result
+          (call-process-shell-command
+           (format "git show --pretty=email %s | %s -" commit script)
+           nil t t))
     (checkpatch-mode)))
 
 (defun checkpatch-find-script ()
