@@ -82,15 +82,20 @@
     map)
   "Keymap for major mode `checkpatch-mode'.")
 
+;; Helper
+(defun checkpatch--prepare-buffer (buffer)
+  "Switch to and prepare buffer for running."
+  (switch-to-buffer buffer)
+  (goto-char (point-min))
+  (erase-buffer))
+
 ;; Launch functions
 (defun checkpatch-run (script file &optional file-is-patch)
   "Run the checkpatch `SCRIPT' against `FILE'."
   (interactive)
   (let ((proc-name "checkpatch")
         (buff-name (format "*checkpatch-%s*" (file-name-base file))))
-    (switch-to-buffer buff-name)
-    (goto-char (point-min))
-    (erase-buffer)
+    (checkpatch--prepare-buffer buff-name)
     (setq checkpatch-result
           (if file-is-patch
               (call-process script nil t t file)
