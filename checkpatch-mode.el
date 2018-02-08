@@ -33,6 +33,7 @@
 ;; Require prerequisites
 
 (require 'compile) ; for compilation-mode
+(require 'rx) ; for regex
 
 ;; Variables
 
@@ -44,6 +45,15 @@
     3 ; line
     )
   "A regular expressions for `compilation-error-regexp-alist-alist'")
+
+(defvar checkpatch-mode-magit-rebase-match-re
+  (rx (: bol
+         (one-or-more letter) ; rebase action
+         " "
+         (group (>= 7 hex))            ; commitish
+         " "
+         (one-or-more nonl))) ; summary
+  "Regexp to match summary lines in rebase summary.")
 
 (defvar checkpatch-script-path
   nil
@@ -102,16 +112,22 @@
             (call-process script nil t t "-f" file)))
     (checkpatch-mode)))
 
-(defun checkpatch-run-against-commit (script commit)
-  "Run the checkpatch `SCRIPT' against `COMMIT'."
+(defun checkpatch-run-against-commit (script commit &optional result-only)
+  "Run the checkpatch `SCRIPT' against `COMMIT'.
+
+Returns the result of running checkpatch. If `RESULT-ONLY' is true
+then don't keep the buffer results of the run."
   (let ((proc-name "checkpatch")
         (buff-name (format "checkpatch-%s" commit)))
-    (checkpatch--prepare-buffer buff-name)
+    (unless result-only
+      (checkpatch--prepare-buffer buff-name))
     (setq checkpatch-result
           (call-process-shell-command
            (format "git show --pretty=email %s | %s -" commit script)
-           nil t t))
-    (checkpatch-mode)))
+           nil (if result-only nil buff-name) t))
+    (unless result-only
+      (checkpatch-mode))
+    checkpatch-result))
 
 (defun checkpatch-find-script ()
   "Find checkpatch script or return nil if we can't find it."
@@ -169,6 +185,21 @@ If `FILE' is not set assume it is the file of the current buffer."
     (when (and commit
                (checkpatch-find-script-or-prompt))
       (checkpatch-run-against-commit checkpatch-script-path commit))))
+
+(defun checkpatch-mark-failed-rebase-commits-for-editing ()
+  "Set any commits in the re-base buffer to edit if checkpatch fails."
+  (interactive)
+  (when (checkpatch-find-script-or-prompt)
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward
+              checkpatch-mode-magit-rebase-match-re
+              (point-max) t)
+        (let ((commit (match-string-no-properties 1)))
+          (when (not (eq 0 (checkpatch-run-against-commit
+                            checkpatch-script-path commit t)))
+            (git-rebase-edit)))))))
+
 
 (defun checkpatch-magit-hook ()
   "Hook checkpatch commands into magit.
