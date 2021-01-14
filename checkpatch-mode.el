@@ -123,7 +123,7 @@ then don't keep the buffer results of the run."
       (checkpatch--prepare-buffer buff-name))
     (setq checkpatch-result
           (call-process-shell-command
-           (format "git show --pretty=email %s | %s -" commit script)
+           (format "git show --patch-with-stat %s | %s -" commit script)
            nil (if result-only nil buff-name) t))
     (unless result-only
       (checkpatch-mode))
