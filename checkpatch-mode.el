@@ -76,11 +76,13 @@
    'compilation-error-regexp-alist-alist checkpatch-mode-regex)
   (add-to-list 'compilation-error-regexp-alist 'checkpatch))
 
-(defun checkpatch-mode-done()
-  "Bury or destroy the checkpatch buffer"
-  (interactive)
+(defun checkpatch-mode-done(&optional arg)
+  "Bury or destroy the checkpatch buffer.
+By default buffers for failed checkpatch runs (non-zero results) are
+  only buried although this can be forced with the prefix."
+  (interactive "p")
   (when (eq major-mode 'checkpatch-mode)
-    (if (eq checkpatch-result 0)
+    (if (or (eq checkpatch-result 0) arg)
         (kill-buffer)
       (bury-buffer))))
 
