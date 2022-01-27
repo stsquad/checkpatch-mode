@@ -160,8 +160,8 @@ then don't keep the buffer results of the run."
   (let ((script (checkpatch-find-script)))
     (unless script
       (setq script
-            (ido-read-file-name
-              "Checkpatch Script: " default-directory)))
+            (read-file-name
+              "Checkpatch Script: " default-directory nil t)))
     (setq checkpatch-script-path script)))
 
 (defun checkpatch-run-against-patch-file (patch-file)
