@@ -164,12 +164,14 @@ then don't keep the buffer results of the run."
               "Checkpatch Script: " default-directory nil t)))
     (setq checkpatch-script-path script)))
 
+;;;###autoload
 (defun checkpatch-run-against-patch-file (patch-file)
   "Run checkpatch against `PATCH-FILE'."
   (interactive)
   (let ((script (checkpatch-find-script-or-prompt)))
     (checkpatch-run script patch-file t)))
 
+;;;###autoload
 (defun checkpatch-run-against-file (&optional file)
   "Run checkpatch against `FILE'.
 If `FILE' is not set assume it is the file of the current buffer."
@@ -180,6 +182,7 @@ If `FILE' is not set assume it is the file of the current buffer."
     (checkpatch-run script file)))
 
 ;; Run from inside magit
+;;;###autoload
 (defun checkpatch-run-from-magit ()
   "Run a checkpatch script against current magit commit."
   (interactive)
